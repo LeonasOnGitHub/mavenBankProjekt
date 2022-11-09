@@ -60,6 +60,8 @@ public class Kundenmenge {
 
 
     }
-
+    public void test(){
+        System.out.println("hi");
+    }
 
 }
