@@ -1,6 +1,5 @@
-package bankobjekt.verarbeitung;
+package bankprojekt.verarbeitung;
 
-import bankprojekt.verarbeitung.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -61,7 +60,7 @@ public class BankTest {
     }
 
     @Test
-    public void gelUeberweisen() throws KontonummerNichtVorhandenException, GesperrtException, NichtGiroKontoExeption {
+    public void gelUeberweisen() throws KontonummerNichtVorhandenException, GesperrtException, nichtUeberweisungsfaehigExeption {
         dkb.geldEinzahlen(dkb.girokontoErstellen(k1), 50);
         dkb.girokontoErstellen(k2);
 

@@ -42,6 +42,19 @@ public class Bank {
         kontoliste.put(neueKontonummer, gKonto);
         return neueKontonummer;
     }
+    /**
+     * Sie fügt das gegebene Konto k (bei dem es sich genaugenommen um ein Mock-Objekt
+     * handeln sollte) in die Kontenliste der Bank ein
+     *
+     * @param k Konto
+     * @return die neue Kontonummer
+     */
+    public long mockEinfuegen(Konto k){
+        long neueKontonummer = neuKontonummer();
+        kontoliste.put(neueKontonummer, k);
+
+        return neueKontonummer;
+    }
 
     /**
      * erstellt ein Sparbuch für den angegebenen Kunden mit einer noch nicht vergebenen Kontonummer
@@ -150,23 +163,23 @@ public class Bank {
      * @param verwendungszweck
      * @return ob die überweisung erfolgreich war
      * @throws KontonummerNichtVorhandenException
-     * @throws NichtGiroKontoExeption
+     * @throws nichtUeberweisungsfaehigExeption
      * @throws GesperrtException
      */
-    public boolean geldUeberweisen(long vonKontonr, long nachKontonr, double betrag, String verwendungszweck) throws KontonummerNichtVorhandenException, NichtGiroKontoExeption, GesperrtException {
+    public boolean geldUeberweisen(long vonKontonr, long nachKontonr, double betrag, String verwendungszweck) throws KontonummerNichtVorhandenException, nichtUeberweisungsfaehigExeption, GesperrtException {
         if (kontoliste.containsKey(vonKontonr)) {
             if (kontoliste.containsKey(nachKontonr)) {
-                if (kontoliste.get(vonKontonr) instanceof Girokonto) {
-                    if (kontoliste.get(vonKontonr) instanceof Girokonto) {
-                        if (((Girokonto) kontoliste.get(vonKontonr)).ueberweisungAbsenden(betrag, "", nachKontonr, this.bankleitzahl, verwendungszweck)){
-                            ((Girokonto) kontoliste.get(nachKontonr)).ueberweisungEmpfangen(betrag, "", vonKontonr, this.bankleitzahl, verwendungszweck);
+                if (kontoliste.get(vonKontonr) instanceof Ueberweisungsfaehig) {
+                    if (kontoliste.get(nachKontonr) instanceof Ueberweisungsfaehig) {
+                        if (((Girokonto) kontoliste.get(vonKontonr)).ueberweisungAbsenden(betrag, kontoliste.get(vonKontonr).getInhaber().getName(), nachKontonr, this.bankleitzahl, verwendungszweck)){
+                            ((Girokonto) kontoliste.get(nachKontonr)).ueberweisungEmpfangen(betrag, kontoliste.get(nachKontonr).getInhaber().getName(), vonKontonr, this.bankleitzahl, verwendungszweck);
                             return true;
                         }
                         return false;
                     }
-                    throw new NichtGiroKontoExeption(nachKontonr);
+                    throw new nichtUeberweisungsfaehigExeption(nachKontonr);
                 }
-                throw new NichtGiroKontoExeption(vonKontonr);
+                throw new nichtUeberweisungsfaehigExeption(vonKontonr);
             }
             throw new KontonummerNichtVorhandenException(nachKontonr);
         }

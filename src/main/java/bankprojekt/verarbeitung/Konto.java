@@ -76,7 +76,7 @@ public abstract class Konto implements Comparable<Konto> {
      *
      * @return der Inhaber
      */
-    public final Kunde getInhaber() {
+    public  Kunde getInhaber() {
         return this.inhaber;
     }
 
@@ -153,7 +153,7 @@ public abstract class Konto implements Comparable<Konto> {
      *
      * @return double
      */
-    public final double getKontostand() {
+    public double getKontostand() {
         return kontostand;
     }
 

@@ -19,7 +19,7 @@ public class Kunde implements Comparable<Kunde>{
 	/**
 	 * Ein Musterkunde
 	 */
-	public static final Kunde MUSTERMANN = 
+	public static  Kunde MUSTERMANN =
 			new Kunde("Max", "Mustermann", "zuhause", LocalDate.now());
 	
 	/**

@@ -1,4 +1,4 @@
-package bankobjekt.verarbeitung;
+package bankprojekt.verarbeitung;
 
 import bankprojekt.verarbeitung.GesperrtException;
 import bankprojekt.verarbeitung.Girokonto;
