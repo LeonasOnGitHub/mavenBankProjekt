@@ -1,3 +1,5 @@
+package spielereien;
+
 import java.time.LocalDate;
 import bankprojekt.verarbeitung.GesperrtException;
 import bankprojekt.verarbeitung.Girokonto;

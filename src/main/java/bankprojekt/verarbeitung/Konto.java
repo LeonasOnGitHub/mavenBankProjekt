@@ -1,5 +1,9 @@
 package bankprojekt.verarbeitung;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.*;
+
 /**
  * stellt ein allgemeines Konto dar
  */
@@ -10,6 +14,11 @@ public abstract class Konto implements Comparable<Konto> {
     public void ausgeben() {
         System.out.println(this.toString());
     }
+
+    /**
+     * das Aktiendepot
+     */
+    private Map<Aktie, Integer> aktiendepot = new HashMap<>();
 
     /**
      * der Kontoinhaber
@@ -76,7 +85,7 @@ public abstract class Konto implements Comparable<Konto> {
      *
      * @return der Inhaber
      */
-    public  Kunde getInhaber() {
+    public Kunde getInhaber() {
         return this.inhaber;
     }
 
@@ -99,8 +108,9 @@ public abstract class Konto implements Comparable<Konto> {
     /**
      * Zieht den gewünschten Betrag in der gewünschten währung vom Konto ab
      * falls das Konto in einer anderen währung läuft wird der Betrag auf diese umgerechnet
+     *
      * @param betrag der abzuhebende Betrag
-     * @param w die Währung
+     * @param w      die Währung
      * @return ob das abheben erfolgreich war
      * @throws GesperrtException
      */
@@ -116,10 +126,11 @@ public abstract class Konto implements Comparable<Konto> {
     /**
      * Erhöht den Kontostand um den Eingezahlten Betrag in der angegebenen Währung
      * falls das Konto in einer anderen währung läuft wird der Betrag auf diese umgerechnet
+     *
      * @param betrag der eingezahlte Betrag
-     * @param w die Währung in der Eingezahlt wurde
+     * @param w      die Währung in der Eingezahlt wurde
      */
-    public void einzahlen(double betrag, Waehrung w){
+    public void einzahlen(double betrag, Waehrung w) {
         double betragInEur = w.waehrungInEuroUmrechnen(betrag);
         double eurInKontoWaehrung = kontoWaehrung.euroInWaehrungUmrechnen(betragInEur);
 
@@ -294,5 +305,65 @@ public abstract class Konto implements Comparable<Konto> {
         if (other.getKontonummer() < this.getKontonummer())
             return 1;
         return 0;
+    }
+
+    public Future<Double> kaufauftrag(Aktie a, int anzahl, double hoechstpreis) {
+        ExecutorService service = Executors.newSingleThreadExecutor();
+        Callable<Double> checkKurs = () -> {
+            double betrag;
+            while (true) {
+                if (a.getKurs() < hoechstpreis) {
+                    betrag =a.getKurs()*anzahl;
+                    if (kontostand >= betrag) {
+                        kontostand = kontostand - betrag;
+                        if (aktiendepot.containsKey(a)) {
+                            aktiendepot.put(a, anzahl + aktiendepot.get(a));
+                        }else{
+                            aktiendepot.put(a, anzahl);
+                        }
+                        break;
+                    }
+                }
+            }
+            return betrag;
+        };
+        Future<Double> aktieKaufen = service.submit(checkKurs);
+        aktieKaufen.isDone();
+        return aktieKaufen;
+    }
+    public Future<Double> verkaufauftrag(String wkn, double minimalpreis){
+
+        ExecutorService service = Executors.newSingleThreadExecutor();
+
+        Callable<Double> checkKurs = () -> {
+            Aktie a = null;
+            for (Aktie aktie:aktiendepot.keySet()) {
+                if (aktie.getWertpapeirkennummer().equals(wkn)) {
+                    a=aktie;
+                }
+            }
+            double betrag;
+            while (true) {
+                if (a.getKurs() > minimalpreis) {
+                    betrag =a.getKurs()*anzahl;
+                    if (kontostand >= betrag) {
+                        kontostand = kontostand - betrag;
+                        if (aktiendepot.containsKey(a)) {
+                            aktiendepot.put(a, anzahl + aktiendepot.get(a));
+                        }else{
+                            aktiendepot.put(a, anzahl);
+                        }
+                        break;
+                    }
+                }
+            }
+            return betrag;
+        };
+        Future<Double> aktieKaufen = service.submit(checkKurs);
+        aktieKaufen.isDone();
+        return aktieKaufen;
+    }
+
+        return null;
     }
 }
