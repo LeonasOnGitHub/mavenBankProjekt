@@ -3,11 +3,16 @@ package bankprojekt.verarbeitung;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.*;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * stellt ein allgemeines Konto dar
  */
 public abstract class Konto implements Comparable<Konto> {
+    Lock lock = new ReentrantLock();
+    Condition condition = lock.newCondition();
     /**
      * gehört hier absolut nicht her!
      */
@@ -307,63 +312,73 @@ public abstract class Konto implements Comparable<Konto> {
         return 0;
     }
 
-    public Future<Double> kaufauftrag(Aktie a, int anzahl, double hoechstpreis) {
-        ExecutorService service = Executors.newSingleThreadExecutor();
+
+    public Future<Double> kaufauftrag(Aktie a, int anzahl, double hoechstpreis) throws ExecutionException, InterruptedException {
+        ExecutorService service = Executors.newCachedThreadPool();
         Callable<Double> checkKurs = () -> {
             double betrag;
             while (true) {
+                Thread.sleep(90);
+                System.out.println("I am "+ a.getWertpapeirkennummer());
+                lock.lock();
+                System.out.println("I am back  "+ a.getWertpapeirkennummer());
+                System.out.println(a.getKurs());
                 if (a.getKurs() < hoechstpreis) {
-                    betrag =a.getKurs()*anzahl;
+                    betrag = a.getKurs() * anzahl;
                     if (kontostand >= betrag) {
                         kontostand = kontostand - betrag;
                         if (aktiendepot.containsKey(a)) {
                             aktiendepot.put(a, anzahl + aktiendepot.get(a));
-                        }else{
+                        } else {
                             aktiendepot.put(a, anzahl);
                         }
+                        System.out.println("Aktie gekauft bei : " + a.getKurs());
+                        condition.signalAll();
+                        lock.unlock();
                         break;
                     }
+
                 }
             }
+
             return betrag;
         };
-        Future<Double> aktieKaufen = service.submit(checkKurs);
-        aktieKaufen.isDone();
-        return aktieKaufen;
+
+        return service.submit(checkKurs);
     }
-    public Future<Double> verkaufauftrag(String wkn, double minimalpreis){
+
+    public Future<Double> verkaufauftrag(String wkn, double minimalpreis) {
 
         ExecutorService service = Executors.newSingleThreadExecutor();
 
         Callable<Double> checkKurs = () -> {
             Aktie a = null;
-            for (Aktie aktie:aktiendepot.keySet()) {
+            for (Aktie aktie : aktiendepot.keySet()) {
                 if (aktie.getWertpapeirkennummer().equals(wkn)) {
-                    a=aktie;
+                    a = aktie;
                 }
             }
             double betrag;
             while (true) {
+                lock.lock();
                 if (a.getKurs() > minimalpreis) {
-                    betrag =a.getKurs()*anzahl;
-                    if (kontostand >= betrag) {
-                        kontostand = kontostand - betrag;
-                        if (aktiendepot.containsKey(a)) {
-                            aktiendepot.put(a, anzahl + aktiendepot.get(a));
-                        }else{
-                            aktiendepot.put(a, anzahl);
-                        }
-                        break;
+
+                    if (aktiendepot.containsKey(a)) {
+                        betrag = a.getKurs() * aktiendepot.get(a);
+                        kontostand = kontostand + betrag;
+                        aktiendepot.remove(a);
+                    } else {
+                        betrag = 0;
                     }
+                    lock.unlock();
+                    break;
                 }
             }
+
             return betrag;
         };
         Future<Double> aktieKaufen = service.submit(checkKurs);
         aktieKaufen.isDone();
         return aktieKaufen;
-    }
-
-        return null;
     }
 }

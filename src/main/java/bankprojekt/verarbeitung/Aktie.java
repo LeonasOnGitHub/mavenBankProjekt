@@ -1,31 +1,33 @@
 package bankprojekt.verarbeitung;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 public class Aktie implements Runnable {
 
     private String name;
     private String wertpapeirkennummer;
     private double kurs;
+    private ScheduledExecutorService service;
+    private Runnable runBerechneKurs;
 
 
     public Aktie(String name, String wertpapeirkennummer, double kurs) {
         this.name = name;
         this.wertpapeirkennummer = wertpapeirkennummer;
         this.kurs = kurs;
-        Runnable kursRechner = this::berechneKurs;
-        Thread kat = new Thread(kursRechner);
-        kat.start();
+
+        this.service = Executors.newSingleThreadScheduledExecutor();
+        this.runBerechneKurs = this::berechneKurs;
+        service.submit(runBerechneKurs);
     }
 
     private void berechneKurs() {
-        while (true) {
-            double kursveränderung = (Math.random() * 6) - 3;
-            this.kurs = this.kurs + (kursveränderung / 100);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
+        service.schedule(this.runBerechneKurs, 100, TimeUnit.MILLISECONDS);
+        double kursveränderung = (Math.random() * 6) - 3;
+        this.kurs = this.kurs + (kursveränderung / 100);
 
-            }
-        }
     }
 
     @Override
