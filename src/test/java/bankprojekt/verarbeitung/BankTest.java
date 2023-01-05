@@ -68,4 +68,29 @@ public class BankTest {
         Assertions.assertEquals(0, dkb.getKontostand(1L));
         Assertions.assertEquals(50, dkb.getKontostand(2L));
     }
+
+    /**
+     * Testet ob die Kopie direkt nach dem Aufruf von clone() dem Original entsprecht.
+     * Testet ob die Kopie  aber unabhängig vom Original ist. Wenn also Geld auf ein Konto
+     * der Original-Bank eingezahlt wird, darf sich das Konto in der Kopie-Bank dadurch
+     * nicht verändern.
+     * @throws KontonummerNichtVorhandenException //sollte aber nicht
+     * @throws GesperrtException //sollte aber nicht
+     */
+    @Test
+    public void kopierungsTest() throws KontonummerNichtVorhandenException, GesperrtException {
+        dkb.girokontoErstellen(k1);
+        dkb.girokontoErstellen(k2);
+        dkb.girokontoErstellen(k3);
+        Bank bc = (Bank) dkb.clone();
+
+        Assertions.assertEquals(dkb.getAlleKonten(), bc.getAlleKonten());
+        Assertions.assertEquals(dkb.getKontostand(1L), bc.getKontostand(1L));
+
+        dkb.geldEinzahlen(1L, 100);
+        Assertions.assertNotEquals(dkb.getKontostand(1L), bc.getKontostand(1L));
+
+        dkb.geldAbheben(1L, 100);
+        Assertions.assertEquals(dkb.getKontostand(1L), bc.getKontostand(1L));
+    }
 }

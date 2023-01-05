@@ -1,10 +1,11 @@
 package bankprojekt.verarbeitung;
 
+import java.io.Serializable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class Aktie implements Runnable {
+public class Aktie implements Runnable, Serializable {
 
     private String name;
     private String wertpapeirkennummer;

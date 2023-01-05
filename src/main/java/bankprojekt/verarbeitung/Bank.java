@@ -1,11 +1,15 @@
 package bankprojekt.verarbeitung;
 
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Bank {
+/**
+ * Eine Bank die verschiedene Arteken von Konten und deren Überweisungen verwaltet.
+ */
+public class Bank implements Cloneable, Serializable {
 
     private Map<Long, Konto> kontoliste = new HashMap<>();
     private final long bankleitzahl;
@@ -42,6 +46,7 @@ public class Bank {
         kontoliste.put(neueKontonummer, gKonto);
         return neueKontonummer;
     }
+
     /**
      * Sie fügt das gegebene Konto k (bei dem es sich genaugenommen um ein Mock-Objekt
      * handeln sollte) in die Kontenliste der Bank ein
@@ -49,7 +54,7 @@ public class Bank {
      * @param k Konto
      * @return die neue Kontonummer
      */
-    public long mockEinfuegen(Konto k){
+    public long mockEinfuegen(Konto k) {
         long neueKontonummer = neuKontonummer();
         kontoliste.put(neueKontonummer, k);
 
@@ -171,7 +176,7 @@ public class Bank {
             if (kontoliste.containsKey(nachKontonr)) {
                 if (kontoliste.get(vonKontonr) instanceof Ueberweisungsfaehig) {
                     if (kontoliste.get(nachKontonr) instanceof Ueberweisungsfaehig) {
-                        if (((Girokonto) kontoliste.get(vonKontonr)).ueberweisungAbsenden(betrag, kontoliste.get(vonKontonr).getInhaber().getName(), nachKontonr, this.bankleitzahl, verwendungszweck)){
+                        if (((Girokonto) kontoliste.get(vonKontonr)).ueberweisungAbsenden(betrag, kontoliste.get(vonKontonr).getInhaber().getName(), nachKontonr, this.bankleitzahl, verwendungszweck)) {
                             ((Girokonto) kontoliste.get(nachKontonr)).ueberweisungEmpfangen(betrag, kontoliste.get(nachKontonr).getInhaber().getName(), vonKontonr, this.bankleitzahl, verwendungszweck);
                             return true;
                         }
@@ -195,10 +200,39 @@ public class Bank {
     private long neuKontonummer() {
         long neueKontonummer = 0;
         for (long i = 1L; neueKontonummer == 0; i++) {
-            if (!kontoliste.containsKey((long) kontoliste.size() +i) ) {
+            if (!kontoliste.containsKey((long) kontoliste.size() + i)) {
                 neueKontonummer = kontoliste.size() + i;
             }
         }
         return neueKontonummer;
+    }
+
+    /**
+     * Erstellt eine Kope dieser Bank
+     * @return das kpierte Bankobjekt
+     */
+    public Object clone() {
+        byte[] bankAsBytes = new byte[0];
+        //Objekt in array Kopieren
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+            ObjectOutputStream out = new ObjectOutputStream(bos);
+            out.writeObject(this);
+            out.flush();
+            bankAsBytes = bos.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        //Objekt aus Array erzeugen
+        ByteArrayInputStream bis = new ByteArrayInputStream(bankAsBytes);
+        Object bankKopie = null;
+        try (ObjectInput in = new ObjectInputStream(bis)) {
+             bankKopie = in.readObject();
+
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        return bankKopie;
     }
 }

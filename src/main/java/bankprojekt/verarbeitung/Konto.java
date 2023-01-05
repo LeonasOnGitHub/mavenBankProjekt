@@ -1,5 +1,6 @@
 package bankprojekt.verarbeitung;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -10,7 +11,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * stellt ein allgemeines Konto dar
  */
-public abstract class Konto implements Comparable<Konto> {
+public abstract class Konto implements Comparable<Konto>, Serializable {
     Lock lock = new ReentrantLock();
     Condition condition = lock.newCondition();
     /**
