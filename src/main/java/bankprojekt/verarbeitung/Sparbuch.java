@@ -57,27 +57,19 @@ public class Sparbuch extends Konto {
     }
 
     @Override
-    public boolean abheben(double betrag) throws GesperrtException {
-        if (betrag < 0 || Double.isNaN(betrag) || Double.isInfinite(betrag)) {
-            throw new IllegalArgumentException("Betrag ungültig");
-        }
-        if (this.isGesperrt()) {
-            GesperrtException e = new GesperrtException(this.getKontonummer());
-            throw e;
-        }
+    protected boolean abhebungPruefen(double betrag){
         LocalDate heute = LocalDate.now();
         if (heute.getMonth() != zeitpunkt.getMonth() || heute.getYear() != zeitpunkt.getYear()) {
             this.bereitsAbgehoben = 0;
         }
-        if (getKontostand() - betrag >= 0.50 &&
+        return getKontostand() - betrag >= 0.50 &&
+                bereitsAbgehoben + betrag <= getAktuelleWaehrung().euroInWaehrungUmrechnen(Sparbuch.ABHEBESUMME);
+    }
 
-                bereitsAbgehoben + betrag <= getAktuelleWaehrung().euroInWaehrungUmrechnen(Sparbuch.ABHEBESUMME)) {
-            setKontostand(getKontostand() - betrag);
+    @Override
+    protected void nachbereitung(double betrag)  {
             bereitsAbgehoben += betrag;
             this.zeitpunkt = LocalDate.now();
-            return true;
-        } else
-            return false;
     }
 
     public double getBereitsAbgehoben() {

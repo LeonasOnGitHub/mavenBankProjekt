@@ -35,7 +35,7 @@ public class Waehrungsspielereien {
 			meinKonto.waehrungswechsel(Waehrung.MKD);
 			System.out.println("Nach Währungswechsel nach MKD: " + meinKonto);
 			boolean hatGeklappt;
-			hatGeklappt = meinKonto.abheben(1000);
+			hatGeklappt = meinKonto.abheben(1000, meinKonto.getAktuelleWaehrung());
 			System.out.println("1000 MKD abgehoben: " + hatGeklappt + System.lineSeparator() + meinKonto);
 			hatGeklappt = meinKonto.abheben(1000, Waehrung.EUR);
 			System.out.println("1000 EUR abgehoben: " + hatGeklappt + System.lineSeparator() + meinKonto);
@@ -52,7 +52,7 @@ public class Waehrungsspielereien {
 			
 			meinKonto.waehrungswechsel(Waehrung.MKD);
 			System.out.println("Nach Währungswechsel nach MKD: " + meinKonto);
-			hatGeklappt = meinKonto.abheben(1000);
+			hatGeklappt = meinKonto.abheben(1000, meinKonto.getAktuelleWaehrung());
 			System.out.println("1000 MKD abgehoben: " + hatGeklappt + System.lineSeparator() + meinKonto);
 			hatGeklappt = meinKonto.abheben(1000, Waehrung.EUR);
 			System.out.println("1000 EUR abgehoben: " + hatGeklappt + System.lineSeparator() + meinKonto);

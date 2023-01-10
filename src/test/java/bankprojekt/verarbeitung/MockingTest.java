@@ -20,7 +20,7 @@ double betrag = 50.0;
         Assertions.assertEquals(1, gkMockKontonummer);
         Assertions.assertEquals(2, gkMock2Kontonummer);
         //setup
-        Mockito.when(gkMock.abheben(betrag)).thenReturn(true);
+        Mockito.when(gkMock.abheben(betrag, gkMock.getAktuelleWaehrung())).thenReturn(true);
         Mockito.when(gkMock.getKontostand()).thenReturn(betrag);
 
         Mockito.when(gkMock.getInhaber()).thenReturn(kunde);
@@ -45,7 +45,7 @@ double betrag = 50.0;
         //test prepared mocks
         Assertions.assertEquals(1, sbMockKontonummer);
         //setup
-        Mockito.when(sbMock.abheben(betrag)).thenReturn(true);
+        Mockito.when(sbMock.abheben(betrag, sbMock.getAktuelleWaehrung())).thenReturn(true);
         Mockito.when(sbMock.getKontostand()).thenReturn(betrag);
         //exercise
         Assertions.assertTrue(bank.geldAbheben(sbMockKontonummer, betrag));
@@ -70,7 +70,7 @@ double betrag = 50.0;
         Assertions.assertEquals(2, gkMock2Kontonummer);
         Assertions.assertEquals(3, sbMockKontonummer);
         //setup
-        Mockito.when(gkMock.abheben(betrag)).thenReturn(true);
+        Mockito.when(gkMock.abheben(betrag, gkMock.getAktuelleWaehrung())).thenReturn(true);
         Mockito.when(gkMock.getKontostand()).thenReturn(betrag);
 
         Mockito.when(gkMock.getInhaber()).thenReturn(kunde);

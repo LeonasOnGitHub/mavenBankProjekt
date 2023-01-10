@@ -55,7 +55,7 @@ public class KontoTest {
         gKonto.setDispo(100);
         Sparbuch sparbuch = new Sparbuch();
         sparbuch.einzahlen(200, Waehrung.EUR);
-        sparbuch.abheben(100);
+        sparbuch.abheben(100, sparbuch.getAktuelleWaehrung());
 
 
         for (Waehrung w : Waehrung.values()) {
@@ -109,7 +109,7 @@ public class KontoTest {
         Assertions.assertTrue(gKonto.abheben(150, Waehrung.EUR));
         Assertions.assertEquals(Waehrung.MKD.euroInWaehrungUmrechnen(-100), gKonto.getKontostand());
 
-        Assertions.assertFalse(gKonto.abheben(1));
+        Assertions.assertFalse(gKonto.abheben(1, gKonto.getAktuelleWaehrung()));
 
 
 

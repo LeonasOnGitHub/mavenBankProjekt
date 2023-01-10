@@ -14,6 +14,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public abstract class Konto implements Comparable<Konto>, Serializable {
     Lock lock = new ReentrantLock();
     Condition condition = lock.newCondition();
+
     /**
      * gehört hier absolut nicht her!
      */
@@ -120,14 +121,57 @@ public abstract class Konto implements Comparable<Konto>, Serializable {
      * @return ob das abheben erfolgreich war
      * @throws GesperrtException
      */
-    public boolean abheben(double betrag, Waehrung w) throws GesperrtException {
+    public final boolean abheben(double betrag, Waehrung w) throws GesperrtException, IllegalArgumentException {
+        betragGueltig(betrag);
+        gesperrt();
         double betragInEur = w.waehrungInEuroUmrechnen(betrag);
         double eurInKontoWaehrung = kontoWaehrung.euroInWaehrungUmrechnen(betragInEur);
-
-        abheben(eurInKontoWaehrung);
-
-        return true;
+        boolean abhebungErfolg = abhebungPruefen(eurInKontoWaehrung);
+        abziehen(eurInKontoWaehrung);
+        nachbereitung(eurInKontoWaehrung);
+        return abhebungErfolg;
     }
+
+    /**
+     * zieht den betrag vom Kontostand ab
+     * @param betrag
+     */
+    private void abziehen(double betrag) {
+        kontostand +=-betrag;
+    }
+
+    /**
+     *  checkt ob der abzuhebene Betrag größer als 0 und nicht unendlich ist
+     * @param betrag
+     * @throws IllegalArgumentException falls der Betrag 0 NaN oder unendlich ist
+     */
+    private void betragGueltig(double betrag) throws IllegalArgumentException {
+        if (betrag < 0 || Double.isNaN(betrag) || Double.isInfinite(betrag)) {
+            throw new IllegalArgumentException("Betrag ungültig");
+        }
+    }
+
+    /**
+     * chekct ob Das Konto gespert ist
+     * @throws GesperrtException falls das Konto Gesperrt ist
+     */
+    private void gesperrt() throws GesperrtException {
+        if (this.isGesperrt()) {
+            throw new GesperrtException(this.getKontonummer());
+        }
+    }
+
+    /**
+     * fuehrt die Kontospezifischen abhebungsvorkehrungen durch
+     * @param betrag
+     * @return ob das Abheben erfolgreich sein wird
+     */
+    protected abstract boolean abhebungPruefen(double betrag);
+
+    /**
+     * fuehrt die kontospezifischen NAchbereitungen durch, falls welche noetig sind
+     */
+    protected void nachbereitung(double betrag){}
 
     /**
      * Erhöht den Kontostand um den Eingezahlten Betrag in der angegebenen Währung
@@ -229,8 +273,7 @@ public abstract class Konto implements Comparable<Konto>, Serializable {
      * @throws GesperrtException        wenn das Konto gesperrt ist
      * @throws IllegalArgumentException wenn der betrag negativ oder unendlich ist
      */
-    public abstract boolean abheben(double betrag)
-            throws GesperrtException;
+
 
     /**
      * sperrt das Konto, Aktionen zum Schaden des Benutzers sind nicht mehr möglich.
@@ -320,9 +363,9 @@ public abstract class Konto implements Comparable<Konto>, Serializable {
             double betrag;
             while (true) {
                 Thread.sleep(90);
-                System.out.println("I am "+ a.getWertpapeirkennummer());
+                System.out.println("I am " + a.getWertpapeirkennummer());
                 lock.lock();
-                System.out.println("I am back  "+ a.getWertpapeirkennummer());
+                System.out.println("I am back  " + a.getWertpapeirkennummer());
                 System.out.println(a.getKurs());
                 if (a.getKurs() < hoechstpreis) {
                     betrag = a.getKurs() * anzahl;

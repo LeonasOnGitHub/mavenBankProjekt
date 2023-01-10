@@ -1,5 +1,7 @@
 package bankprojekt.verarbeitung;
 
+import bankprojekt.verarbeitung.fabriks.Kontofabrik;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -32,50 +34,55 @@ public class Bank implements Cloneable, Serializable {
         return this.bankleitzahl;
     }
 
+    public long kontoErstellen(Kontofabrik fabrik, int kontotype) {
+        long neueKontonummer = neuKontonummer();
+        Konto k = fabrik.erzeugeKonto(kontotype);
+        kontoliste.put(neueKontonummer, k);
+        return neueKontonummer;
+    }
     /**
      * erstellt ein Girokonto für den angegebenen Kunden mit einer noch nicht vergebenen Kontonummer
      * trägt das neue Konto in die Kontoliste ein
      *
      * @param inhaber
      * @return die neue Kontonummer
-     */
-    public long girokontoErstellen(Kunde inhaber) {
-        long neueKontonummer = neuKontonummer();
-        Girokonto gKonto = new Girokonto(inhaber, neueKontonummer, 100);
 
-        kontoliste.put(neueKontonummer, gKonto);
-        return neueKontonummer;
+    public long girokontoErstellen(Kunde inhaber) {
+    long neueKontonummer = neuKontonummer();
+    Girokonto gKonto = new Girokonto(inhaber, neueKontonummer, 100);
+
+    kontoliste.put(neueKontonummer, gKonto);
+    return neueKontonummer;
     }
 
-    /**
      * Sie fügt das gegebene Konto k (bei dem es sich genaugenommen um ein Mock-Objekt
      * handeln sollte) in die Kontenliste der Bank ein
      *
      * @param k Konto
      * @return die neue Kontonummer
-     */
-    public long mockEinfuegen(Konto k) {
-        long neueKontonummer = neuKontonummer();
-        kontoliste.put(neueKontonummer, k);
 
-        return neueKontonummer;
+    public long mockEinfuegen(Konto k) {
+    long neueKontonummer = neuKontonummer();
+    kontoliste.put(neueKontonummer, k);
+
+    return neueKontonummer;
     }
 
-    /**
+
      * erstellt ein Sparbuch für den angegebenen Kunden mit einer noch nicht vergebenen Kontonummer
      * trägt das neue Konto in die Kontoliste ein
      *
      * @param inhaber
      * @return die neue Kontonummer
-     */
+
     public long sparbuchErstellen(Kunde inhaber) {
-        long neueKontonummer = neuKontonummer();
-        Sparbuch sparbuch = new Sparbuch(inhaber, neueKontonummer);
+    long neueKontonummer = neuKontonummer();
+    Sparbuch sparbuch = new Sparbuch(inhaber, neueKontonummer);
 
-        kontoliste.put(neueKontonummer, sparbuch);
-        return neueKontonummer;
+    kontoliste.put(neueKontonummer, sparbuch);
+    return neueKontonummer;
     }
-
+     */
     /**
      * @return eine Auflistung aller Kontonummern + Kontostand
      */
@@ -110,7 +117,7 @@ public class Bank implements Cloneable, Serializable {
      */
     public boolean geldAbheben(long von, double betrag) throws GesperrtException, KontonummerNichtVorhandenException {
         if (kontoliste.containsKey(von)) {
-            return kontoliste.get(von).abheben(betrag);
+            return kontoliste.get(von).abheben(betrag, kontoliste.get(von).getAktuelleWaehrung());
         }
         throw new KontonummerNichtVorhandenException(von);
 
@@ -209,6 +216,7 @@ public class Bank implements Cloneable, Serializable {
 
     /**
      * Erstellt eine Kope dieser Bank
+     *
      * @return das kpierte Bankobjekt
      */
     public Object clone() {
@@ -227,7 +235,7 @@ public class Bank implements Cloneable, Serializable {
         ByteArrayInputStream bis = new ByteArrayInputStream(bankAsBytes);
         Object bankKopie = null;
         try (ObjectInput in = new ObjectInputStream(bis)) {
-             bankKopie = in.readObject();
+            bankKopie = in.readObject();
 
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();

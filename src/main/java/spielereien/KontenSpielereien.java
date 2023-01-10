@@ -40,7 +40,7 @@ public class KontenSpielereien {
 		meinSpar.einzahlen(50);
 		try
 		{
-			boolean hatGeklappt = meinSpar.abheben(70);
+			boolean hatGeklappt = meinSpar.abheben(70, meinSpar.getAktuelleWaehrung());
 			System.out.println("Abhebung hat geklappt: " + hatGeklappt);
 			System.out.println(meinSpar);
 		}
