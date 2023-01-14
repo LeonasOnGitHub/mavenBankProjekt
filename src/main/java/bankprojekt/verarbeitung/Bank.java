@@ -34,9 +34,9 @@ public class Bank implements Cloneable, Serializable {
         return this.bankleitzahl;
     }
 
-    public long kontoErstellen(Kontofabrik fabrik, int kontotype) {
+    public long kontoErstellen(Kontofabrik fabrik, Kunde kunde) {
         long neueKontonummer = neuKontonummer();
-        Konto k = fabrik.erzeugeKonto(kontotype);
+        Konto k = fabrik.erzeugeKonto(kunde, neueKontonummer);
         kontoliste.put(neueKontonummer, k);
         return neueKontonummer;
     }
@@ -117,7 +117,7 @@ public class Bank implements Cloneable, Serializable {
      */
     public boolean geldAbheben(long von, double betrag) throws GesperrtException, KontonummerNichtVorhandenException {
         if (kontoliste.containsKey(von)) {
-            return kontoliste.get(von).abheben(betrag, kontoliste.get(von).getAktuelleWaehrung());
+            return kontoliste.get(von).abheben(betrag);
         }
         throw new KontonummerNichtVorhandenException(von);
 

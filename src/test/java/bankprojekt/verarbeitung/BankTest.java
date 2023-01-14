@@ -1,5 +1,7 @@
 package bankprojekt.verarbeitung;
 
+import bankprojekt.verarbeitung.fabriks.GirokontoFabrik;
+import bankprojekt.verarbeitung.fabriks.SparbuchFabrik;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -14,26 +16,24 @@ public class BankTest {
     @Test
     public void erstellen() {
 
-        Assertions.assertEquals(1L, dkb.sparbuchErstellen(k1));
-        Assertions.assertEquals(2L, dkb.girokontoErstellen(k2));
-        Assertions.assertEquals(3L, dkb.sparbuchErstellen(k2));
-        Assertions.assertEquals(4L, dkb.girokontoErstellen(k3));
-
-
+        Assertions.assertEquals(1L, dkb.kontoErstellen(new SparbuchFabrik(), k1));
+        Assertions.assertEquals(2L, dkb.kontoErstellen(new GirokontoFabrik(), k1));
+        Assertions.assertEquals(3L, dkb.kontoErstellen(new SparbuchFabrik(), k2));
+        Assertions.assertEquals(4L, dkb.kontoErstellen(new GirokontoFabrik(), k2));
     }
 
     @Test
     public void abheben() throws GesperrtException, KontonummerNichtVorhandenException {
-        Assertions.assertTrue(dkb.geldAbheben(dkb.girokontoErstellen(k1), 50));
-        Assertions.assertFalse(dkb.geldAbheben(dkb.sparbuchErstellen(k1), 50));
+        Assertions.assertTrue(dkb.geldAbheben(dkb.kontoErstellen(new GirokontoFabrik(), k1), 50));
+        Assertions.assertFalse(dkb.geldAbheben(dkb.kontoErstellen(new SparbuchFabrik(), k1), 50));
 
         Assertions.assertEquals(-50, dkb.getKontostand(1L));
     }
 
     @Test
     public void einzahlen() throws KontonummerNichtVorhandenException {
-        dkb.geldEinzahlen(dkb.girokontoErstellen(k1), 50);
-        dkb.geldEinzahlen(dkb.sparbuchErstellen(k1), 50);
+        dkb.geldEinzahlen(dkb.kontoErstellen(new GirokontoFabrik(), k1), 50);
+        dkb.geldEinzahlen(dkb.kontoErstellen(new SparbuchFabrik(), k1), 50);
 
         Assertions.assertEquals(50, dkb.getKontostand(1L));
         Assertions.assertEquals(50, dkb.getKontostand(2L));
@@ -41,8 +41,8 @@ public class BankTest {
 
     @Test
     public void loeschen() throws KontonummerNichtVorhandenException {
-        dkb.sparbuchErstellen(k1);
-        dkb.girokontoErstellen(k2);
+        dkb.kontoErstellen(new SparbuchFabrik(), k1);
+        dkb.kontoErstellen(new GirokontoFabrik(), k2);
 
         Assertions.assertTrue(dkb.kontoLoeschen(1L));
         Assertions.assertEquals(2L, dkb.getAlleKontonummern().get(0));
@@ -51,8 +51,8 @@ public class BankTest {
 
     @Test
     public void kontostand() throws KontonummerNichtVorhandenException {
-        dkb.geldEinzahlen(dkb.girokontoErstellen(k1), 50);
-        dkb.geldEinzahlen(dkb.sparbuchErstellen(k1), 50);
+        dkb.geldEinzahlen(dkb.kontoErstellen(new GirokontoFabrik(), k1), 50);
+        dkb.geldEinzahlen(dkb.kontoErstellen(new SparbuchFabrik(), k1), 50);
 
 
         Assertions.assertEquals(50, dkb.getKontostand(1L));
@@ -61,8 +61,8 @@ public class BankTest {
 
     @Test
     public void gelUeberweisen() throws KontonummerNichtVorhandenException, GesperrtException, nichtUeberweisungsfaehigExeption {
-        dkb.geldEinzahlen(dkb.girokontoErstellen(k1), 50);
-        dkb.girokontoErstellen(k2);
+        dkb.geldEinzahlen(dkb.kontoErstellen(new GirokontoFabrik(), k1), 50);
+        dkb.kontoErstellen(new GirokontoFabrik(), k2);
 
         Assertions.assertTrue(dkb.geldUeberweisen(1L, 2L, 50, "test"));
         Assertions.assertEquals(0, dkb.getKontostand(1L));
@@ -79,9 +79,9 @@ public class BankTest {
      */
     @Test
     public void kopierungsTest() throws KontonummerNichtVorhandenException, GesperrtException {
-        dkb.girokontoErstellen(k1);
-        dkb.girokontoErstellen(k2);
-        dkb.girokontoErstellen(k3);
+        dkb.kontoErstellen(new GirokontoFabrik(), k1);
+        dkb.kontoErstellen(new GirokontoFabrik(), k2);
+        dkb.kontoErstellen(new GirokontoFabrik(), k3);
         Bank bc = (Bank) dkb.clone();
 
         Assertions.assertEquals(dkb.getAlleKonten(), bc.getAlleKonten());

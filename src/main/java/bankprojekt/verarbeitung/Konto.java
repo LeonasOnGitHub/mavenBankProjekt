@@ -131,6 +131,22 @@ public abstract class Konto implements Comparable<Konto>, Serializable {
         nachbereitung(eurInKontoWaehrung);
         return abhebungErfolg;
     }
+    /**
+     * Zieht den gewünschten Betrag in der gewünschten währung vom Konto ab
+     * geht davon aus, dass der angegebene Betrag in der Währung des Kontos ist
+     *
+     * @param betrag der abzuhebende Betrag
+     * @return ob das abheben erfolgreich war
+     * @throws GesperrtException
+     */
+    public final boolean abheben(double betrag) throws GesperrtException, IllegalArgumentException {
+        betragGueltig(betrag);
+        gesperrt();
+        boolean abhebungErfolg = abhebungPruefen(betrag);
+        abziehen(betrag);
+        nachbereitung(betrag);
+        return abhebungErfolg;
+    }
 
     /**
      * zieht den betrag vom Kontostand ab

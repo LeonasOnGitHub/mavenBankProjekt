@@ -39,7 +39,7 @@ public class Sparbuch extends Konto {
     /**
      * ein Standard-Sparbuch, das inhaber gehört und die angegebene Kontonummer hat
      *
-     * @param inhaber     der Kontoinhaber
+     * @param inhaber     der Ko    ntoinhaber
      * @param kontonummer die Wunsch-Kontonummer
      * @throws IllegalArgumentException wenn inhaber null ist
      */
