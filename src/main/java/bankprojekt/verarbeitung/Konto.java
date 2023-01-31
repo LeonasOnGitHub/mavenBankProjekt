@@ -1,6 +1,7 @@
 package bankprojekt.verarbeitung;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.*;
@@ -12,8 +13,10 @@ import java.util.concurrent.locks.ReentrantLock;
  * stellt ein allgemeines Konto dar
  */
 public abstract class Konto implements Comparable<Konto>, Serializable {
-    Lock lock = new ReentrantLock();
-    Condition condition = lock.newCondition();
+   private Lock lock = new ReentrantLock();
+    private Condition condition = lock.newCondition();
+
+    private ArrayList<Beobachter> observerList = new ArrayList<>();
 
     /**
      * gehört hier absolut nicht her!
@@ -131,6 +134,7 @@ public abstract class Konto implements Comparable<Konto>, Serializable {
         nachbereitung(eurInKontoWaehrung);
         return abhebungErfolg;
     }
+
     /**
      * Zieht den gewünschten Betrag in der gewünschten währung vom Konto ab
      * geht davon aus, dass der angegebene Betrag in der Währung des Kontos ist
@@ -150,14 +154,16 @@ public abstract class Konto implements Comparable<Konto>, Serializable {
 
     /**
      * zieht den betrag vom Kontostand ab
+     *
      * @param betrag
      */
     private void abziehen(double betrag) {
-        kontostand +=-betrag;
+        aendereKontostand(-betrag);
     }
 
     /**
-     *  checkt ob der abzuhebene Betrag größer als 0 und nicht unendlich ist
+     * checkt ob der abzuhebene Betrag größer als 0 und nicht unendlich ist
+     *
      * @param betrag
      * @throws IllegalArgumentException falls der Betrag 0 NaN oder unendlich ist
      */
@@ -169,6 +175,7 @@ public abstract class Konto implements Comparable<Konto>, Serializable {
 
     /**
      * chekct ob Das Konto gespert ist
+     *
      * @throws GesperrtException falls das Konto Gesperrt ist
      */
     private void gesperrt() throws GesperrtException {
@@ -179,6 +186,7 @@ public abstract class Konto implements Comparable<Konto>, Serializable {
 
     /**
      * fuehrt die Kontospezifischen abhebungsvorkehrungen durch
+     *
      * @param betrag
      * @return ob das Abheben erfolgreich sein wird
      */
@@ -187,7 +195,8 @@ public abstract class Konto implements Comparable<Konto>, Serializable {
     /**
      * fuehrt die kontospezifischen NAchbereitungen durch, falls welche noetig sind
      */
-    protected void nachbereitung(double betrag){}
+    protected void nachbereitung(double betrag) {
+    }
 
     /**
      * Erhöht den Kontostand um den Eingezahlten Betrag in der angegebenen Währung
@@ -262,7 +271,7 @@ public abstract class Konto implements Comparable<Konto>, Serializable {
         if (betrag < 0 || Double.isNaN(betrag) || Double.isInfinite(betrag)) {
             throw new IllegalArgumentException("Falscher Betrag");
         }
-        setKontostand(getKontostand() + betrag);
+        aendereKontostand(betrag);
     }
 
     /**
@@ -386,7 +395,7 @@ public abstract class Konto implements Comparable<Konto>, Serializable {
                 if (a.getKurs() < hoechstpreis) {
                     betrag = a.getKurs() * anzahl;
                     if (kontostand >= betrag) {
-                        kontostand = kontostand - betrag;
+                        aendereKontostand(-betrag);
                         if (aktiendepot.containsKey(a)) {
                             aktiendepot.put(a, anzahl + aktiendepot.get(a));
                         } else {
@@ -425,7 +434,7 @@ public abstract class Konto implements Comparable<Konto>, Serializable {
 
                     if (aktiendepot.containsKey(a)) {
                         betrag = a.getKurs() * aktiendepot.get(a);
-                        kontostand = kontostand + betrag;
+                        aendereKontostand(betrag);
                         aktiendepot.remove(a);
                     } else {
                         betrag = 0;
@@ -440,5 +449,42 @@ public abstract class Konto implements Comparable<Konto>, Serializable {
         Future<Double> aktieKaufen = service.submit(checkKurs);
         aktieKaufen.isDone();
         return aktieKaufen;
+    }
+
+    /**
+     * meldet den Beobachter an
+     *
+     * @param b
+     */
+    public void anmelden(Beobachter b) {
+        observerList.add(b);
+    }
+
+    /**
+     * meldet den Bebachter ab
+     *
+     * @param b
+     */
+    public void abmelden(Beobachter b) {
+        observerList.remove(b);
+    }
+
+    /**
+     * benachichtigt alle Beobachter
+     * @param betrag
+     */
+    private void meldeKontostandAenderung(double betrag) {
+        for (Beobachter b : observerList) {
+            b.aktuallisieren(betrag);
+        }
+    }
+
+    /**
+     * aendert den Kontostand um den Betrag und ruft die Beobachter auf
+     * @param betrag
+     */
+    protected void aendereKontostand(double betrag) {
+        this.kontostand += betrag;
+        meldeKontostandAenderung(betrag);
     }
 }

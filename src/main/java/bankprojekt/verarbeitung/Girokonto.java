@@ -69,7 +69,7 @@ public class Girokonto extends Konto implements Ueberweisungsfaehig {
         if (betrag < 0 || Double.isNaN(betrag) || Double.isInfinite(betrag) || empfaenger == null || verwendungszweck == null)
             throw new IllegalArgumentException("Parameter fehlerhaft");
         if (getKontostand() - betrag >= -dispo) {
-            setKontostand(getKontostand() - betrag);
+            aendereKontostand(-betrag);
             return true;
         } else
             return false;
@@ -79,7 +79,7 @@ public class Girokonto extends Konto implements Ueberweisungsfaehig {
     public void ueberweisungEmpfangen(double betrag, String vonName, long vonKontonr, long vonBlz, String verwendungszweck) {
         if (betrag < 0 || Double.isNaN(betrag) || Double.isInfinite(betrag) || vonName == null || verwendungszweck == null)
             throw new IllegalArgumentException("Parameter fehlerhaft");
-        setKontostand(getKontostand() + betrag);
+        aendereKontostand(betrag);
     }
 
     @Override

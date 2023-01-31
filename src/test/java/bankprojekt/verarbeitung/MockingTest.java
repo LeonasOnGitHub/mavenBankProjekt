@@ -3,10 +3,10 @@ package bankprojekt.verarbeitung;
 import bankprojekt.verarbeitung.fabriks.Kontofabrik;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 
 public class MockingTest {
     double betrag = 50.0;
@@ -16,6 +16,9 @@ public class MockingTest {
     Konto mgk2 = Mockito.mock(Girokonto.class);
     Girokonto sgk = Mockito.spy(Girokonto.class);
     Sparbuch ssk = Mockito.spy(Sparbuch.class);
+    Beobachter bm1 = Mockito.mock(Beobachter.class);
+    Beobachter bm2 = Mockito.mock(Beobachter.class);
+    Beobachter bm3 = Mockito.mock(Beobachter.class);
 
     @Test
     public void giroKontoTest() throws GesperrtException, KontonummerNichtVorhandenException, nichtUeberweisungsfaehigExeption {
@@ -117,4 +120,25 @@ public class MockingTest {
         }
 
     }
+
+    @Test
+    public void beobachterTest() throws GesperrtException {
+        //Vorbereitung
+        Konto k = new Girokonto();
+        k.anmelden(bm1);
+        k.anmelden(bm2);
+        k.anmelden(bm3);
+
+        //Operationen
+        k.einzahlen(100);
+        k.abheben(30);
+        k.abmelden(bm3);
+        k.abheben(20);
+
+        //Test
+        Mockito.verify(bm1, Mockito.times(3)).aktuallisieren(ArgumentMatchers.anyDouble());
+        Mockito.verify(bm2, Mockito.times(3)).aktuallisieren(ArgumentMatchers.anyDouble());
+        Mockito.verify(bm3, Mockito.times(2)).aktuallisieren(ArgumentMatchers.anyDouble());
+    }
+
 }
