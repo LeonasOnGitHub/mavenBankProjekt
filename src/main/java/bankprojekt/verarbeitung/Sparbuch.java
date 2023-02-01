@@ -56,6 +56,11 @@ public class Sparbuch extends Konto {
         return ausgabe;
     }
 
+    /**
+     * prueft ob auf dem Konto genug geld ist um den betrag ab zu ziehen
+     * @param betrag
+     * @return
+     */
     @Override
     protected boolean abhebungPruefen(double betrag){
         LocalDate heute = LocalDate.now();
@@ -66,6 +71,10 @@ public class Sparbuch extends Konto {
                 bereitsAbgehoben + betrag <= getAktuelleWaehrung().euroInWaehrungUmrechnen(Sparbuch.ABHEBESUMME);
     }
 
+    /**
+     * speichert die abhebung in bereitsabgehoben
+     * @param betrag
+     */
     @Override
     protected void nachbereitung(double betrag)  {
             bereitsAbgehoben += betrag;
@@ -76,7 +85,10 @@ public class Sparbuch extends Konto {
         return bereitsAbgehoben;
     }
 
-
+    /**
+     * wechselt die waehrung den kontos
+     * @param w die neue waherung
+     */
     public void waehrungswechsel(Waehrung w) {
         this.bereitsAbgehoben = this.getAktuelleWaehrung().waehrungInEuroUmrechnen(this.bereitsAbgehoben);
         this.bereitsAbgehoben = w.euroInWaehrungUmrechnen(this.bereitsAbgehoben);

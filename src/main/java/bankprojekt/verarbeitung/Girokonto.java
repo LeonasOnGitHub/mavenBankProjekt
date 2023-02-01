@@ -59,6 +59,16 @@ public class Girokonto extends Konto implements Ueberweisungsfaehig {
         this.dispo = dispo;
     }
 
+    /**
+     * sendet eine Ueberweisung an ein anders Konto
+     * @param betrag double
+     * @param empfaenger String
+     * @param nachKontonr int
+     * @param nachBlz int
+     * @param verwendungszweck String
+     * @return o die ueberweisung erfolgreich war
+     * @throws GesperrtException
+     */
     @Override
     public boolean ueberweisungAbsenden(double betrag,
                                         String empfaenger, long nachKontonr,
@@ -75,6 +85,14 @@ public class Girokonto extends Konto implements Ueberweisungsfaehig {
             return false;
     }
 
+    /**
+     * empfaegt eine ueberweiseung von einem anderen Konto
+     * @param betrag double
+     * @param vonName String
+     * @param vonKontonr int
+     * @param vonBlz int
+     * @param verwendungszweck String
+     */
     @Override
     public void ueberweisungEmpfangen(double betrag, String vonName, long vonKontonr, long vonBlz, String verwendungszweck) {
         if (betrag < 0 || Double.isNaN(betrag) || Double.isInfinite(betrag) || vonName == null || verwendungszweck == null)
@@ -90,14 +108,19 @@ public class Girokonto extends Konto implements Ueberweisungsfaehig {
         return ausgabe;
     }
 
-    @Override
+
     /**
      * prueft ob der abzuhebenende Betrag kleiner ist als der Kontostand + Dispo
      */
+    @Override
     public boolean abhebungPruefen(double betrag) {
         return getKontostand() + dispo - betrag >= 0;
     }
 
+    /**
+     *  wechselt die waehrung des Kontos
+     * @param w die neue waehrung
+     */
     public void waehrungswechsel(Waehrung w) {
         this.dispo = this.getAktuelleWaehrung().waehrungInEuroUmrechnen(this.dispo);
         this.dispo = w.euroInWaehrungUmrechnen(this.dispo);

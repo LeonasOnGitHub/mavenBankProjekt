@@ -34,55 +34,19 @@ public class Bank implements Cloneable, Serializable {
         return this.bankleitzahl;
     }
 
+    /**
+     * Erstellt ein erstellt ein Konto aus einer Fabrik und weißt diesem eine neue erstellte Kontonummer zu
+     * @param fabrik
+     * @param kunde
+     * @return die neue erstellte Kontonummer
+     */
     public long kontoErstellen(Kontofabrik fabrik, Kunde kunde) {
         long neueKontonummer = neuKontonummer();
         Konto k = fabrik.erzeugeKonto(kunde, neueKontonummer);
         kontoliste.put(neueKontonummer, k);
         return neueKontonummer;
     }
-    /**
-     * erstellt ein Girokonto für den angegebenen Kunden mit einer noch nicht vergebenen Kontonummer
-     * trägt das neue Konto in die Kontoliste ein
-     *
-     * @param inhaber
-     * @return die neue Kontonummer
 
-    public long girokontoErstellen(Kunde inhaber) {
-    long neueKontonummer = neuKontonummer();
-    Girokonto gKonto = new Girokonto(inhaber, neueKontonummer, 100);
-
-    kontoliste.put(neueKontonummer, gKonto);
-    return neueKontonummer;
-    }
-
-     * Sie fügt das gegebene Konto k (bei dem es sich genaugenommen um ein Mock-Objekt
-     * handeln sollte) in die Kontenliste der Bank ein
-     *
-     * @param k Konto
-     * @return die neue Kontonummer
-
-    public long mockEinfuegen(Konto k) {
-    long neueKontonummer = neuKontonummer();
-    kontoliste.put(neueKontonummer, k);
-
-    return neueKontonummer;
-    }
-
-
-     * erstellt ein Sparbuch für den angegebenen Kunden mit einer noch nicht vergebenen Kontonummer
-     * trägt das neue Konto in die Kontoliste ein
-     *
-     * @param inhaber
-     * @return die neue Kontonummer
-
-    public long sparbuchErstellen(Kunde inhaber) {
-    long neueKontonummer = neuKontonummer();
-    Sparbuch sparbuch = new Sparbuch(inhaber, neueKontonummer);
-
-    kontoliste.put(neueKontonummer, sparbuch);
-    return neueKontonummer;
-    }
-     */
     /**
      * @return eine Auflistung aller Kontonummern + Kontostand
      */
