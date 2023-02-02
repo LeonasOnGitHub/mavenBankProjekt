@@ -8,7 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.TextArea;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
@@ -25,12 +25,13 @@ public class KontoController extends Application {
     @FXML private Kunde kundenModell;
 
     @FXML private CheckBox sperrenCheckBox;
-    @FXML private TextInputDialog adressText;
-    @FXML private TextInputDialog betragsText;
+    @FXML private TextArea adressText;
+    @FXML private TextArea betragsText;
     @FXML private Button abhebenButton;
     @FXML private Button einzahlenButton;
     @FXML private Text konotnummerText;
     @FXML private Text kontostandText;
+    @FXML private Button addresseAendernButton;
 
 
     @FXML public void initialize()
@@ -38,17 +39,22 @@ public class KontoController extends Application {
         sperrenCheckBox.selectedProperty().bindBidirectional(kontoModell.gesperrtProperty());
         konotnummerText.textProperty().bind(kontoModell.nummerProperty().asString().concat("Kontonummer: "));
         kontostandText.textProperty().bind(kontoModell.kontostandproperty().asString().concat("Kontostand: "));
-        adressText.contentTextProperty().bindBidirectional(kundenModell.adressProperty());
         abhebenButton.defaultButtonProperty().addListener((Observable e) -> {
             try {
-                abheben(Double.parseDouble(betragsText.getContentText()));
+                abheben(Double.parseDouble(betragsText.getText()));
             } catch (GesperrtException ex) {
                 ex.printStackTrace();
             }
         });
         einzahlenButton.defaultButtonProperty().addListener((Observable e) ->
-                einzahlen(Double.parseDouble(betragsText.getContentText())));
+                einzahlen(Double.parseDouble(betragsText.getText())));
+        addresseAendernButton.setOnAction(e -> addresseAendern(adressText.getText()));
     }
+
+    private void addresseAendern(String text) {
+
+    }
+
 
     @FXML private void abheben(double betrag) throws GesperrtException {
         kontoModell.abheben(betrag);
