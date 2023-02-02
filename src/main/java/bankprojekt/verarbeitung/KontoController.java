@@ -9,10 +9,12 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class KontoController extends Application {
 
@@ -26,6 +28,7 @@ public class KontoController extends Application {
 
     @FXML private CheckBox sperrenCheckBox;
     @FXML private TextArea adressText;
+    @FXML private TextInputDialog adressCheat;
     @FXML private TextArea betragsText;
     @FXML private Button abhebenButton;
     @FXML private Button einzahlenButton;
@@ -39,6 +42,7 @@ public class KontoController extends Application {
         sperrenCheckBox.selectedProperty().bindBidirectional(kontoModell.gesperrtProperty());
         konotnummerText.textProperty().bind(kontoModell.nummerProperty().asString().concat("Kontonummer: "));
         kontostandText.textProperty().bind(kontoModell.kontostandproperty().asString().concat("Kontostand: "));
+        adressCheat.contentTextProperty().bindBidirectional(kundenModell.adressProperty());
         abhebenButton.defaultButtonProperty().addListener((Observable e) -> {
             try {
                 abheben(Double.parseDouble(betragsText.getText()));
@@ -52,7 +56,7 @@ public class KontoController extends Application {
     }
 
     private void addresseAendern(String text) {
-
+        adressCheat.setContentText(text);
     }
 
 
