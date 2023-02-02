@@ -67,11 +67,11 @@ public class KontoController extends Application {
         this.stage = stage;
         FXMLLoader loader =
                 new FXMLLoader(getClass().
-                        getResource("../KontoOberflaeche.fxml"));
+                        getResource("../../KontoOberflaeche2.fxml"));
         loader.setController(this);
         Parent lc = loader.load();
         Scene scene = new Scene(lc, 300, 275);
-        stage.setTitle("Audio Configuration");
+        stage.setTitle("Konto bearbeiten");
         stage.setScene(scene);
         stage.show();
     }
