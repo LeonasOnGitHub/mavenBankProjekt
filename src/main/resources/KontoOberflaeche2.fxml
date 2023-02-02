@@ -6,9 +6,12 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
+<?import bankprojekt.verarbeitung.Konto?>
+<?import bankprojekt.verarbeitung.Kunde?>
 <BorderPane stylesheets="@style.css" styleClass="standard" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
     <fx:define>
-        <Girokonto fx:id="model"/>
+        <Konto fx:id="kontoModel"/>
+        <Kunde fx:id="kundenModell"/>
     </fx:define>
     <top>
         <Text id="ueberschrift" strokeType="OUTSIDE" strokeWidth="0.0" text="Ein Konto verändern" BorderPane.alignment="CENTER" />
