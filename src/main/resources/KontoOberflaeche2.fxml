@@ -42,7 +42,7 @@
                 <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Information: " GridPane.rowIndex="5" />
 
                 <Text fx:id="kontostandText" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                <CheckBox fx:id="sprerrenCheckBox" mnemonicParsing="false" text="CheckBox" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <CheckBox fx:id="sperrenCheckBox" mnemonicParsing="true" textAlignment="RIGHT" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="2"/>
                 <TextArea fx:id="adressText" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                 <TextArea fx:id="info" editable="false" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
             </children>
