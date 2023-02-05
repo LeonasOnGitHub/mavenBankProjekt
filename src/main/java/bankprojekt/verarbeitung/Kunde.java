@@ -60,7 +60,7 @@ public class Kunde implements Comparable<Kunde>, Serializable {
 	 * erzeugt einen Standardkunden
 	 */
 	public Kunde() {
-		this("Max", "Mustermann", "Adresse", LocalDate.now());
+		this("Max", "Mustermann", "zuhause", LocalDate.now());
 	}
 
 	/**

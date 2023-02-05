@@ -34,7 +34,7 @@ public class KontoController extends Application {
     @FXML private Text kontonummerText;
     @FXML private Text kontostandText;
     @FXML private TextField adressTextField;
-    @FXML private Text adressText;
+
     @FXML private Text meldungsText;
 
 
@@ -43,13 +43,11 @@ public class KontoController extends Application {
      */
     @FXML public void initialize()
     {
-        adressTextField.setText(kundenModell.getAdresse());
         adressTextField.textProperty().bindBidirectional(kundenModell.adressProperty());
         sperrenCheckBox.selectedProperty().bindBidirectional(kontoModell.gesperrtProperty());
         kontonummerText.textProperty().bind(kontoModell.nummerProperty().asString());
         kontostandText.textProperty().bind(kontoModell.kontostandproperty().asString());
-        //adressText.textProperty().bind(kundenModell.adressProperty());
-       // adressText.setText(kundenModell.getAdresse());
+
         abhebenButton.setOnAction(e ->{
             abheben(Double.parseDouble(betragsText.getText()));
         });
@@ -100,19 +98,15 @@ public class KontoController extends Application {
      */
     @Override
     public void start(Stage stage) throws IOException {
-
         this.stage = stage;
         FXMLLoader loader =
                 new FXMLLoader(getClass().
                         getResource("../../KontoOberflaeche2.fxml"));
         loader.setController(this);
         Parent lc = loader.load();
-        adressText.setText(kundenModell.getAdresse());
         Scene scene = new Scene(lc, 600, 475);
-        kontoModell.einzahlen(10);
         stage.setTitle("Konto bearbeiten");
         stage.setScene(scene);
-
         stage.show();
     }
 }
