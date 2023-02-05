@@ -6,16 +6,18 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.awt.*;
 import java.io.IOException;
-import java.util.Objects;
 
+/**
+ * Kontrolliert das Fenster und die Uebergabe der tasks an die Modelle
+ */
 public class KontoController extends Application {
 
     /**
@@ -23,66 +25,94 @@ public class KontoController extends Application {
      */
     private Stage stage;
 
-    @FXML private Konto kontoModell;
+    @FXML private Girokonto kontoModell;
     @FXML private Kunde kundenModell;
-
     @FXML private CheckBox sperrenCheckBox;
-    @FXML private TextArea adressText;
-    @FXML private TextInputDialog adressCheat;
-    @FXML private TextArea betragsText;
+    @FXML private TextField betragsText;
     @FXML private Button abhebenButton;
     @FXML private Button einzahlenButton;
-    @FXML private Text konotnummerText;
+    @FXML private Text kontonummerText;
     @FXML private Text kontostandText;
-    @FXML private Button addresseAendernButton;
+    @FXML private TextField adressTextField;
+    @FXML private Text adressText;
+    @FXML private Text meldungsText;
 
 
+    /**
+     * Inizialisiert alle Elemente
+     */
     @FXML public void initialize()
     {
+        adressTextField.setText(kundenModell.getAdresse());
+        adressTextField.textProperty().bindBidirectional(kundenModell.adressProperty());
         sperrenCheckBox.selectedProperty().bindBidirectional(kontoModell.gesperrtProperty());
-        konotnummerText.textProperty().bind(kontoModell.nummerProperty().asString().concat("Kontonummer: "));
-        kontostandText.textProperty().bind(kontoModell.kontostandproperty().asString().concat("Kontostand: "));
-        adressCheat.contentTextProperty().bindBidirectional(kundenModell.adressProperty());
-        abhebenButton.defaultButtonProperty().addListener((Observable e) -> {
-            try {
-                abheben(Double.parseDouble(betragsText.getText()));
-            } catch (GesperrtException ex) {
-                ex.printStackTrace();
-            }
+        kontonummerText.textProperty().bind(kontoModell.nummerProperty().asString());
+        kontostandText.textProperty().bind(kontoModell.kontostandproperty().asString());
+        //adressText.textProperty().bind(kundenModell.adressProperty());
+       // adressText.setText(kundenModell.getAdresse());
+        abhebenButton.setOnAction(e ->{
+            abheben(Double.parseDouble(betragsText.getText()));
         });
-        einzahlenButton.defaultButtonProperty().addListener((Observable e) ->
+        einzahlenButton.setOnAction(( e) ->
                 einzahlen(Double.parseDouble(betragsText.getText())));
-        addresseAendernButton.setOnAction(e -> addresseAendern(adressText.getText()));
     }
 
-    private void addresseAendern(String text) {
-        adressCheat.setContentText(text);
+    /**
+     * hebt den Betrag vom Konto ab
+     * gibt aus ob die Abhebung
+     * erfolreich war
+     * @param betrag
+     */
+    @FXML private void abheben(double betrag)  {
+        try {
+            if (kontoModell.abheben(betrag)){
+                meldungsText.setText("Abhebung war erfolfgeich!");
+            }else {
+             meldungsText.setText("Abhebung was nicht Erfolgreich");
+
+            }
+        } catch (GesperrtException e) {
+            meldungsText.setText("Konto ist Gesperrt");
+        }
     }
 
-
-    @FXML private void abheben(double betrag) throws GesperrtException {
-        kontoModell.abheben(betrag);
-    }
+    /**
+     * zahlt den Betrag auf das Konto ein
+     * @param betrag
+     */
     @FXML private void einzahlen(double betrag)  {
         kontoModell.einzahlen(betrag);
+        meldungsText.setText("Einzahlen war Erfolgreich!");
     }
 
+    /**
+     * schließt das Fenster und beendet das Programm
+     */
     @FXML private void schliessen()
     {
         stage.close();
     }
 
+    /**
+     * main Methode die alles andere startet
+     * @param stage
+     * @throws IOException
+     */
     @Override
     public void start(Stage stage) throws IOException {
+
         this.stage = stage;
         FXMLLoader loader =
                 new FXMLLoader(getClass().
                         getResource("../../KontoOberflaeche2.fxml"));
         loader.setController(this);
         Parent lc = loader.load();
-        Scene scene = new Scene(lc, 300, 275);
+        adressText.setText(kundenModell.getAdresse());
+        Scene scene = new Scene(lc, 600, 475);
+        kontoModell.einzahlen(10);
         stage.setTitle("Konto bearbeiten");
         stage.setScene(scene);
+
         stage.show();
     }
 }

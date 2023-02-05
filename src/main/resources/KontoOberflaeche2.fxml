@@ -10,7 +10,7 @@
 <?import bankprojekt.verarbeitung.Kunde?>
 <BorderPane stylesheets="@style.css" styleClass="standard" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1">
     <fx:define>
-        <Konto fx:id="kontoModel"/>
+        <Girokonto fx:id="kontoModell"/>
         <Kunde fx:id="kundenModell"/>
     </fx:define>
     <top>
@@ -37,26 +37,28 @@
                 <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
             </padding>
             <children>
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Kontonummer: " />
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Kontostand: " GridPane.rowIndex="1" />
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Gesperrt: " GridPane.rowIndex="2" />
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Adresse: " GridPane.rowIndex="3" />
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Willkommen lieber Benutzer" GridPane.rowIndex="4" />
-                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Information: " GridPane.rowIndex="5" />
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Kontonummer: " GridPane.rowIndex="1" />
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Kontostand: " GridPane.rowIndex="2" />
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Gesperrt: " GridPane.rowIndex="3" />
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Adresse: " GridPane.rowIndex="4" />
 
-                <Text fx:id="kontostandText" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                <CheckBox fx:id="sperrenCheckBox" mnemonicParsing="true" textAlignment="RIGHT" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="2"/>
-                <TextArea fx:id="adressText" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                <TextArea fx:id="info" editable="false" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+
+                <Text fx:id="kontostandText" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                <Text fx:id="kontonummerText" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <CheckBox fx:id="sperrenCheckBox" mnemonicParsing="true" textAlignment="RIGHT" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.rowIndex="3"/>
+                <TextField fx:id="adressTextField" text="100.00" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+                <Text fx:id="adressText" strokeType="OUTSIDE" strokeWidth="0.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
             </children>
         </GridPane>
     </center>
     <bottom>
         <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" BorderPane.alignment="CENTER">
             <children>
-                <TextField fx:id="betrag" text="100.00" />
-                <Button fx:id="einzahlen" mnemonicParsing="false" text="Einzahlen" />
-                <Button fx:id="abheben" mnemonicParsing="false" text="Abheben" />
+                <TextField fx:id="betragsText" text="100.00" />
+                <Button fx:id="einzahlenButton" mnemonicParsing="false" text="Einzahlen" />
+                <Button fx:id="abhebenButton" mnemonicParsing="false" text="Abheben" />
+                <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Meldung:" />
+                <Text fx:id="meldungsText" strokeType="OUTSIDE" strokeWidth="0.0" />
             </children>
         </HBox>
     </bottom>
